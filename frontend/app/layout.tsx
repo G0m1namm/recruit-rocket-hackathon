@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <ReactQueryProvider>
     <TooltipProvider>
-      <html lang="en">
+      <html lang="en" className='dark'>
         <body className={inter.className}>
           <Navbar />
           {children}
