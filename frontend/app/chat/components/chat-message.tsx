@@ -10,12 +10,18 @@ import { IconOpenAI, IconUser } from '@/components/ui/icons'
 import { ChatMessageActions } from './chat-message-actions'
 import { Model } from '../data/models'
 import { MemoizedReactMarkdown } from './markdown'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export interface ChatMessageProps {
   message: Model
+  isLoading?: boolean
 }
 
-export function ChatMessage({ message, ...props }: ChatMessageProps) {
+export function ChatMessage({
+  message,
+  isLoading,
+  ...props
+}: ChatMessageProps) {
   return (
     <div
       className={cn(
@@ -32,56 +38,69 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
             : 'bg-primary text-primary-foreground'
         )}
       >
-        {message.role === 'user' ? <IconUser /> : <IconOpenAI />}
+        {message.role === 'user' && !isLoading ? (
+          <IconUser width={16} height={16} />
+        ) : (
+          <IconOpenAI width={16} height={16} />
+        )}
       </div>
       <div
         className={cn(
-          'flex-1 px-1 space-y-2 overflow-hidden',
+          'flex-1 space-y-2 overflow-hidden px-1',
           message.role === 'user' ? 'mr-4' : 'ml-4'
         )}
       >
-        <MemoizedReactMarkdown
-          className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
-          remarkPlugins={[remarkGfm, remarkMath]}
-          components={{
-            p({ children }) {
-              return <p className="mb-2 last:mb-0">{children}</p>
-            },
-            code({ node, inline, className, children, ...props }) {
-              if (children.length) {
-                if (children[0] == '▍') {
+        {isLoading && (
+          <Skeleton className="bg-primary/50 h-[20px] w-full rounded-full" />
+        )}
+        {!isLoading && (
+          <>
+            <MemoizedReactMarkdown
+              className="prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 break-words"
+              remarkPlugins={[remarkGfm, remarkMath]}
+              components={{
+                p({ children }) {
+                  return <p className="mb-2 last:mb-0">{children}</p>
+                },
+                code({ node, inline, className, children, ...props }) {
+                  if (children.length) {
+                    if (children[0] == '▍') {
+                      return (
+                        <span className="mt-1 animate-pulse cursor-default">
+                          ▍
+                        </span>
+                      )
+                    }
+
+                    children[0] = (children[0] as string).replace('`▍`', '▍')
+                  }
+
+                  const match = /language-(\w+)/.exec(className || '')
+
+                  if (inline) {
+                    return (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    )
+                  }
+
                   return (
-                    <span className="mt-1 cursor-default animate-pulse">▍</span>
+                    <CodeBlock
+                      key={Math.random()}
+                      language={(match && match[1]) || ''}
+                      value={String(children).replace(/\n$/, '')}
+                      {...props}
+                    />
                   )
                 }
-
-                children[0] = (children[0] as string).replace('`▍`', '▍')
-              }
-
-              const match = /language-(\w+)/.exec(className || '')
-
-              if (inline) {
-                return (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                )
-              }
-
-              return (
-                <CodeBlock
-                  key={Math.random()}
-                  language={(match && match[1]) || ''}
-                  value={String(children).replace(/\n$/, '')}
-                  {...props}
-                />
-              )
-            }
-          }}
-        >
-          {message.content}
-        </MemoizedReactMarkdown>
-        <ChatMessageActions message={message} />
+              }}
+            >
+              {message.content}
+            </MemoizedReactMarkdown>
+            <ChatMessageActions message={message} />
+          </>
+        )}
       </div>
     </div>
   )

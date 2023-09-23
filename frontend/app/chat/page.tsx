@@ -9,10 +9,15 @@ import Chat from './components/chat'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
 import { useEffect } from 'react'
 import { Filter } from './data/presets'
+import { toast } from 'sonner'
 
 export default function ChatUI() {
   const queryClient = useQueryClient()
-  const { isLoading: isLoadingMessages, data: messages } = useQuery({
+  const {
+    isLoading: isLoadingMessages,
+    isFetching,
+    data: messages
+  } = useQuery({
     queryKey: ['todos'],
     queryFn: (): Promise<Model[]> => Promise.resolve([])
   })
@@ -22,14 +27,24 @@ export default function ChatUI() {
     initialData: []
   })
 
-  const [storedMessaged, setStoredMessaged] = useLocalStorage<Model[] | null>(
+  const [storedMessaged, setStoredMessaged] = useLocalStorage<Model[]>(
     'chat-messages',
     messages ?? []
   )
 
   const mutation = useMutation({
-    mutationFn: (variables: { filters?: Array<string> } & Model) =>
-      fetcher('/api/dummie', {
+    mutationFn: (variables: { filters?: Array<string> } & Model) => {
+      const updatedClientMessage = [
+        ...storedMessaged,
+        {
+          role: 'user',
+          content: variables.content,
+          filters: variables.filters
+        }
+      ]
+      queryClient.setQueryData(['todos'], updatedClientMessage)
+      setStoredMessaged(updatedClientMessage)
+      return fetcher('/api/ask/prompt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -38,36 +53,19 @@ export default function ChatUI() {
           mainPrompt: variables.content,
           filters: variables.filters
         })
-      }),
-    onSuccess: (data, variables: { filters?: Array<string> } & Model) => {
+      })
+    },
+    onSuccess: data => {
       if (messages) {
-        const updatedClientMessage = [
-          ...messages,
-          {
-            role: variables.role,
-            content: variables.content,
-            filters: variables.filters
-          }
-        ]
-        const updatedMessages = [...updatedClientMessage, ...data]
+        const updatedMessages = [...storedMessaged, ...data]
         queryClient.setQueryData(['todos'], updatedMessages)
         setStoredMessaged(updatedMessages)
       }
+    },
+    onError: error => {
+      toast.error(`${error}`)
     }
   })
-
-  const syncFromLocalStorage = ({ key, newValue }: StorageEvent) => {
-    if (key === 'chat-messages' && newValue)
-      queryClient.setQueryData(['todos'], JSON.parse(newValue))
-  }
-
-  useEffect(() => {
-    window.addEventListener('storage', syncFromLocalStorage)
-
-    return () => {
-      window.removeEventListener('storage', syncFromLocalStorage)
-    }
-  }, [])
 
   useEffect(() => {
     if (storedMessaged) setStoredMessaged(storedMessaged)
@@ -77,18 +75,9 @@ export default function ChatUI() {
 
   return (
     <>
-      <div className="hidden">
-        <Image
-          src="/assets/logo.webp"
-          width={1280}
-          height={916}
-          alt="Playground"
-          className="block dark:hidden"
-        />
-      </div>
       <Chat
         messages={storedMessaged}
-        isLoading={isLoadingMessages}
+        isLoading={isFetching || mutation.isLoading}
         append={mutation.mutate}
         filters={filters}
       />
