@@ -23,7 +23,7 @@ def index() -> str:
 
 
 @app.post("/ask/prompt")
-def getPromptResponse(prompt: UserPrompt) -> AiResponse:
+def getPromptResponse(prompt: UserPrompt) -> List[AiResponse]:
     """Get the ai response based on the prompt provided by the user
 
     Args:
@@ -33,7 +33,7 @@ def getPromptResponse(prompt: UserPrompt) -> AiResponse:
         AiResponse: Formatted response from the AI
     """
     contentResponse = queryPrompt(prompt)
-    return AiResponse(role="ai", content=contentResponse)
+    return [AiResponse(role="ai", content=contentResponse)]
 
 
 @app.post("/dummie")
