@@ -7,10 +7,10 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
-from langchain.callbacks import get_openai_callback
 
 load_dotenv()
 from PIL import Image
+img = Image.open(r"./images.jpeg")
 st.set_page_config(page_title="DocGenius: Document Generation AI", page_icon= img)
 st.header("Ask Your PDF📄")
 pdf = st.file_uploader("Upload your PDF", type="pdf")
