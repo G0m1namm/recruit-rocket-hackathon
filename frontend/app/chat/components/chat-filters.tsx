@@ -28,9 +28,16 @@ export default function ChatFilters({ filters }: Props) {
 
   return (
     <div className="relative mx-auto mb-8 w-fit max-w-2xl space-x-2 px-4">
+      <div className="mb-4 flex w-full justify-center">
+        <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+          Choose prompts from skills
+        </h2>
+      </div>
       {filtersPreset.map(filter => (
         <Toggle
           key={filter.id}
+          className="capitalize"
+          variant="outline"
           onPressedChange={isPressed =>
             addFilters.mutate({ filterObj: filter, pressed: isPressed })
           }

@@ -1,22 +1,6 @@
 'use client'
-import React from 'react'
 import Link from 'next/link'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-  NavigationMenuViewport
-} from '@/components/ui/navigation-menu'
-import { twMerge } from 'tailwind-merge'
-import { clsx, type ClassValue } from 'clsx'
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+
 
 const Navbar = () => {
   return (

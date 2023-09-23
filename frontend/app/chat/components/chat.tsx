@@ -31,9 +31,6 @@ export default function Chat({ messages, isLoading, filters, append }: Props) {
         <h2 className="whitespace-nowrap text-lg font-semibold">
           Chat with your resumes
         </h2>
-        <div className="ml-auto flex w-full space-x-2 sm:justify-end">
-          <PresetSelector presets={presets} />
-        </div>
       </div>
       <Separator />
       <div className="container h-full py-6">
@@ -43,9 +40,15 @@ export default function Chat({ messages, isLoading, filters, append }: Props) {
               <div className="flex h-full flex-col space-y-4">
                 <div className="pb-[200px] pt-4 md:pt-10">
                   <ChatFilters filters={filters} />
+
+                  <div className="mb-4 flex w-full justify-center">
+                    <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+                      Chat
+                    </h2>
+                  </div>
                   {messages.length ? (
                     <>
-                      <ChatList messages={messages} />
+                      <ChatList messages={messages} isLoading={isLoading} />
                       <ChatScrollAnchor trackVisibility={isLoading} />
                     </>
                   ) : (
