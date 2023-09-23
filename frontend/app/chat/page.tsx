@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { Model } from './data/models'
 import { EmptyScreen } from './components/empty-screen'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
