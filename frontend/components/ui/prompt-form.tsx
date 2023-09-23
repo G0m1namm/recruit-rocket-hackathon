@@ -12,9 +12,9 @@ import React from 'react'
 
 export interface PromptProps {
   onSubmit: (value: string) => Promise<void>
-  isLoading: boolean,
-  input: string,
-  setInput: (val: HTMLTextAreaElement["value"]) => void
+  isLoading: boolean
+  input: string
+  setInput: (val: HTMLTextAreaElement['value']) => void
 }
 
 export function PromptForm({

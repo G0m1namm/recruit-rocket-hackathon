@@ -18,7 +18,10 @@ export interface ChatMessageProps {
 export function ChatMessage({ message, ...props }: ChatMessageProps) {
   return (
     <div
-      className={cn('group relative mb-4 flex items-start md:-ml-12')}
+      className={cn(
+        'group relative mb-4 items-start md:-ml-12',
+        message.role === 'user' ? 'flex flex-row-reverse text-end' : 'flex'
+      )}
       {...props}
     >
       <div
@@ -31,7 +34,12 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
       >
         {message.role === 'user' ? <IconUser /> : <IconOpenAI />}
       </div>
-      <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
+      <div
+        className={cn(
+          'flex-1 px-1 space-y-2 overflow-hidden',
+          message.role === 'user' ? 'mr-4' : 'ml-4'
+        )}
+      >
         <MemoizedReactMarkdown
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
