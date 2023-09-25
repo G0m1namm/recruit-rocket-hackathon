@@ -26,15 +26,6 @@ export function ChatPanel({ id, isLoading, append }: ChatPanelProps) {
     <div className="from-muted/10 to-muted/30 fixed inset-x-0 bottom-0 bg-gradient-to-b from-10% to-50%">
       <ButtonScrollToBottom />
       <div className="mx-auto sm:max-w-2xl sm:px-4">
-        <div className="flex h-fit items-center justify-center py-4">
-          {isLoading && (
-            <Badge className="flex gap-2 py-1">
-              <span className="dark:bg-dark h-2 w-2 animate-bounce rounded-full bg-white delay-150"></span>
-              <span className="dark:bg-dark h-2 w-2 animate-bounce rounded-full bg-white delay-300"></span>
-              <span className="dark:bg-dark h-2 w-2 animate-bounce rounded-full bg-white delay-700"></span>
-            </Badge>
-          )}
-        </div>
         <div className="bg-background space-y-4 border-t px-4 py-2 shadow-lg sm:rounded-t-xl sm:border md:py-4">
           <PromptForm
             onSubmit={async value => {
